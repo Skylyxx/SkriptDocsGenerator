@@ -31,9 +31,10 @@ dependencies {
 
 task copyJar(type: Copy) {
     from(jar)
-    into(serverDir + '\\plugins')
+    into('.\\out')
 }
 build.finalizedBy(copyJar)
+copyJar.finalizedBy(clean)
 
 processResources {
     filter ReplaceTokens, tokens: [
