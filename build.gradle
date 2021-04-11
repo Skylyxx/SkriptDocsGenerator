@@ -1,0 +1,45 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'java'
+}
+
+group 'fr.skylyxx.docsgenerator'
+version '1.0'
+
+def mcVersion = '1.16'
+def mcSubVersion = '.5'
+def serverDir = 'D:\\Servers\\Minecraft\\SkriptDocsGenerator'
+
+repositories {
+    mavenCentral()
+    maven {url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'}
+    maven {url = 'https://oss.sonatype.org/content/repositories/snapshots'}
+    maven {url = 'https://jitpack.io'}
+}
+
+dependencies {
+    implementation(group: 'org.jetbrains', name: 'annotations', version: '16.0.2')
+    implementation(group: 'org.spigotmc', name: 'spigot-api', version: mcVersion + mcSubVersion + '-R0.1-SNAPSHOT')
+    implementation('com.github.SkriptLang:Skript:2.5.3') {
+        exclude group: 'com.sk89q.worldguard', module: 'worldguard-legacy'
+        exclude group: 'net.milkbowl.vault', module: 'Vault'
+        exclude group: 'com.destroystokyo.paper', module: 'paper-api'
+        exclude group: 'io.papermc', module: 'paperlib'
+    }
+}
+
+task copyJar(type: Copy) {
+    from(jar)
+    into(serverDir + '\\plugins')
+}
+build.finalizedBy(copyJar)
+
+processResources {
+    filter ReplaceTokens, tokens: [
+            'version': project.property('version'),
+            'apiVersion': mcVersion,
+    ]
+}
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
