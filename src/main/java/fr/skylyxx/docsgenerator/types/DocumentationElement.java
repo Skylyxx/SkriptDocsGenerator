@@ -11,18 +11,6 @@ public class DocumentationElement {
     protected String[] since;
     protected String[] patterns;
     protected String[] requiredPlugins;
-    protected transient ElementType elementType;
-
-    public DocumentationElement(String id, String name, String[] description, String[] examples, String[] since, String[] patterns, String[] requiredPlugins, ElementType elementType) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.examples = examples;
-        this.since = since;
-        this.patterns = patterns;
-        this.requiredPlugins = requiredPlugins;
-        this.elementType = elementType;
-    }
 
     public DocumentationElement() {
         this.id = null;
@@ -32,7 +20,6 @@ public class DocumentationElement {
         this.since = null;
         this.patterns = null;
         this.requiredPlugins = null;
-        this.elementType = null;
     }
 
     public String getId() {
@@ -98,15 +85,6 @@ public class DocumentationElement {
         return this;
     }
 
-    public ElementType getElementType() {
-        return elementType;
-    }
-
-    public DocumentationElement setElementType(ElementType elementType) {
-        this.elementType = elementType;
-        return this;
-    }
-
     @Override
     public String toString() {
         return "DocumentationElement{" +
@@ -114,10 +92,9 @@ public class DocumentationElement {
                 ", name='" + name + '\'' +
                 ", description=" + Arrays.toString(description) +
                 ", examples=" + Arrays.toString(examples) +
-                ", since='" + since + '\'' +
+                ", since=" + Arrays.toString(since) +
                 ", patterns=" + Arrays.toString(patterns) +
                 ", requiredPlugins=" + Arrays.toString(requiredPlugins) +
-                ", elementType=" + elementType +
                 '}';
     }
 }
