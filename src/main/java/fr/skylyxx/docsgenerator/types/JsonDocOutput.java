@@ -15,4 +15,14 @@ public class JsonDocOutput {
         this.conditions = conditions;
         this.events = events;
     }
+
+    @Override
+    public String toString() {
+        return "JsonDocOutput{" +
+                "effects=" + effects +
+                ", expressions=" + expressions +
+                ", conditions=" + conditions +
+                ", events=" + events +
+                '}';
+    }
 }
