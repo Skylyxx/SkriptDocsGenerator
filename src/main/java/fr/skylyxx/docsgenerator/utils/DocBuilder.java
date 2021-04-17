@@ -1,27 +1,28 @@
 package fr.skylyxx.docsgenerator.utils;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
 import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.*;
 import ch.njol.util.Pair;
 import fr.skylyxx.docsgenerator.SkriptDocsGenerator;
 import fr.skylyxx.docsgenerator.types.DocumentationElement;
-import fr.skylyxx.docsgenerator.types.ElementType;
 import fr.skylyxx.docsgenerator.types.JsonDocOutput;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class DocBuilder {
 
     private static SkriptDocsGenerator skriptDocsGenerator = SkriptDocsGenerator.getPlugin(SkriptDocsGenerator.class);
 
-    public static DocumentationElement generateElementDoc(SyntaxElementInfo syntaxElementInfo, ElementType elementType) {
+    public static DocumentationElement generateElementDoc(SyntaxElementInfo syntaxElementInfo) {
         Class<?> clazz = syntaxElementInfo.getElementClass();
-        DocumentationElement documentationElement = new DocumentationElement().setElementType(elementType);
+        DocumentationElement documentationElement = new DocumentationElement();
 
         if (clazz.isAnnotationPresent(DocumentationId.class))
             documentationElement.setId(clazz.getAnnotation(DocumentationId.class).value());
@@ -47,6 +48,18 @@ public class DocBuilder {
         return documentationElement;
     }
 
+    public static DocumentationElement generateEventDoc(SkriptEventInfo<?> skriptEventInfo) {
+        DocumentationElement documentationElement = new DocumentationElement();
+
+        documentationElement.setId(skriptEventInfo.getDocumentationID());
+        documentationElement.setName(skriptEventInfo.getName());
+        documentationElement.setDescription(skriptEventInfo.getDescription());
+        documentationElement.setSince(new String[]{skriptEventInfo.getSince()});
+        documentationElement.setRequiredPlugins(skriptEventInfo.getRequiredPlugins());
+
+        return documentationElement;
+    }
+
     public static void generateAddonDoc(Pair<String, SkriptAddon> pair) {
         String mainClass = pair.getKey();
         SkriptAddon skriptAddon = pair.getValue();
@@ -56,46 +69,50 @@ public class DocBuilder {
         String thePackage = String.join(".", split).replace(".null", "");
 
         List<DocumentationElement> effects = new ArrayList<>();
-        for (SyntaxElementInfo<? extends Effect> effect : skriptDocsGenerator.getEffects()) {
+        for (SyntaxElementInfo<? extends Effect> effect : Skript.getEffects()) {
             Class<?> clazz = effect.getElementClass();
             if (clazz.getName().startsWith(thePackage)) {
-                if(clazz.isAnnotationPresent(NoDoc.class))
+                if (clazz.isAnnotationPresent(NoDoc.class))
                     continue;
-                DocumentationElement documentationElement = generateElementDoc(effect, ElementType.EFFECT);
+                DocumentationElement documentationElement = generateElementDoc(effect);
                 effects.add(documentationElement);
             }
         }
 
+        Iterator<ExpressionInfo<?, ?>> iterator = Skript.getExpressions();
+        List<ExpressionInfo<?, ?>> skriptExpressions = new ArrayList<>();
+        while (iterator.hasNext())
+            skriptExpressions.add(iterator.next());
+
         List<DocumentationElement> expressions = new ArrayList<>();
-        for (ExpressionInfo<?, ?> expression : skriptDocsGenerator.getExpressions()) {
+        for (ExpressionInfo<?, ?> expression : skriptExpressions) {
             Class<?> clazz = expression.getElementClass();
             if (clazz.getName().startsWith(thePackage)) {
-                if(clazz.isAnnotationPresent(NoDoc.class))
+                if (clazz.isAnnotationPresent(NoDoc.class))
                     continue;
-                DocumentationElement documentationElement = generateElementDoc(expression, ElementType.EXPRESSION);
-                effects.add(documentationElement);
+                DocumentationElement documentationElement = generateElementDoc(expression);
+                expressions.add(documentationElement);
             }
         }
 
         List<DocumentationElement> conditions = new ArrayList<>();
-        for (SyntaxElementInfo<? extends Condition> condition : skriptDocsGenerator.getConditions()) {
+        for (SyntaxElementInfo<? extends Condition> condition : Skript.getConditions()) {
             Class<?> clazz = condition.getElementClass();
             if (clazz.getName().startsWith(thePackage)) {
-                if(clazz.isAnnotationPresent(NoDoc.class))
+                if (clazz.isAnnotationPresent(NoDoc.class))
                     continue;
-                DocumentationElement documentationElement = generateElementDoc(condition, ElementType.CONDITION);
-                effects.add(documentationElement);
+                DocumentationElement documentationElement = generateElementDoc(condition);
+                conditions.add(documentationElement);
             }
         }
 
         List<DocumentationElement> events = new ArrayList<>();
-        for (SkriptEventInfo<?> event : skriptDocsGenerator.getEvents()) {
+        for (SkriptEventInfo<?> event : Skript.getEvents()) {
             Class<?> clazz = event.getElementClass();
             if (clazz.getName().startsWith(thePackage)) {
-                if(clazz.isAnnotationPresent(NoDoc.class))
-                    continue;
-                DocumentationElement documentationElement = generateElementDoc(event, ElementType.CONDITION);
-                effects.add(documentationElement);
+                DocumentationElement documentationElement = generateEventDoc(event);
+                System.out.println(documentationElement);
+                events.add(documentationElement);
             }
         }
 
