@@ -20,10 +20,10 @@ public class SkriptDocsGenerator extends JavaPlugin {
 
     private Gson gson;
 
-    private Collection<SyntaxElementInfo<? extends Effect>> effects = new ArrayList<>();
-    private Collection<ExpressionInfo<?, ?>> expressions = new ArrayList<>();
-    private Collection<SyntaxElementInfo<? extends Condition>> conditions = new ArrayList<>();
-    private Collection<SkriptEventInfo<?>> events = new ArrayList<>();
+    private final Collection<SyntaxElementInfo<? extends Effect>> effects = new ArrayList<>();
+    private final Collection<ExpressionInfo<?, ?>> expressions = new ArrayList<>();
+    private final Collection<SyntaxElementInfo<? extends Condition>> conditions = new ArrayList<>();
+    private final Collection<SkriptEventInfo<?>> events = new ArrayList<>();
 
     @Override
     public void onEnable() {

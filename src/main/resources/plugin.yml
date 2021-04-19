@@ -5,9 +5,9 @@ website: https://github.com/Skylyxx/SkriptDocsGenerator
 main: fr.skylyxx.docsgenerator.SkriptDocsGenerator
 version: @version@
 api-version: @apiVersion@
-softdepend: [Skript]
+softdepend: [ Skript ]
 commands:
   skriptdocsgenerator:
     description: Command to generate docs
     permission: skriptdocsgenerator.use
-    aliases: ['docs', 'skriptdocs', 'docsgenerator']
+    aliases: [ 'docs', 'skriptdocs', 'docsgenerator' ]

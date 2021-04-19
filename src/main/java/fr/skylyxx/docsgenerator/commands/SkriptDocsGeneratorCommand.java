@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 
 public class SkriptDocsGeneratorCommand implements CommandExecutor {
 
-    private SkriptDocsGenerator skriptDocsGenerator = SkriptDocsGenerator.getPlugin(SkriptDocsGenerator.class);
+    private final SkriptDocsGenerator skriptDocsGenerator = SkriptDocsGenerator.getPlugin(SkriptDocsGenerator.class);
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

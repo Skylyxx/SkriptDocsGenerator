@@ -7,9 +7,9 @@ public class DocumentationElement {
     protected String id;
     protected String name;
     protected String[] description;
+    protected String[] patterns;
     protected String[] examples;
     protected String[] since;
-    protected String[] patterns;
     protected String[] requiredPlugins;
 
     public DocumentationElement() {
