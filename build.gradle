@@ -9,13 +9,13 @@ version '1.0'
 
 def mcVersion = '1.16'
 def mcSubVersion = '.5'
-def serverDir = 'D:\\Servers\\Minecraft\\SkriptDocsGenerator'
+//def output = 'D:\\Servers\\Minecraft\\SkriptDocsGenerator\\plugins'
 
 repositories {
     mavenCentral()
-    maven {url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'}
-    maven {url = 'https://oss.sonatype.org/content/repositories/snapshots'}
-    maven {url = 'https://jitpack.io'}
+    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url = 'https://jitpack.io' }
 }
 
 dependencies {
@@ -29,12 +29,8 @@ dependencies {
     }
 }
 
-task copyJar(type: Copy) {
-    from(jar)
-    into('.\\out')
-}
-build.finalizedBy(copyJar)
-copyJar.finalizedBy(clean)
+//setLibsDirName(output)
+//build.finalizedBy(clean)
 
 processResources {
     filter ReplaceTokens, tokens: [
