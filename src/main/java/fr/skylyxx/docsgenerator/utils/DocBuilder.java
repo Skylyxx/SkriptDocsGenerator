@@ -2,12 +2,15 @@ package fr.skylyxx.docsgenerator.utils;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
+import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.*;
+import ch.njol.skript.registrations.Classes;
 import ch.njol.util.Pair;
 import fr.skylyxx.docsgenerator.SkriptDocsGenerator;
 import fr.skylyxx.docsgenerator.types.DocumentationElement;
 import fr.skylyxx.docsgenerator.types.JsonDocOutput;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -18,7 +21,7 @@ import java.util.List;
 
 public class DocBuilder {
 
-    private static SkriptDocsGenerator skriptDocsGenerator = SkriptDocsGenerator.getPlugin(SkriptDocsGenerator.class);
+    private static final SkriptDocsGenerator skriptDocsGenerator = SkriptDocsGenerator.getPlugin(SkriptDocsGenerator.class);
 
     public static DocumentationElement generateElementDoc(SyntaxElementInfo syntaxElementInfo) {
         Class<?> clazz = syntaxElementInfo.getElementClass();
@@ -36,26 +39,43 @@ public class DocBuilder {
 
         if (clazz.isAnnotationPresent(Description.class))
             documentationElement.setDescription(clazz.getAnnotation(Description.class).value());
+
+        documentationElement.setPatterns(syntaxElementInfo.getPatterns());
+
         if (clazz.isAnnotationPresent(Examples.class))
             documentationElement.setExamples(clazz.getAnnotation(Examples.class).value());
         if (clazz.isAnnotationPresent(Since.class))
             documentationElement.setSince(new String[]{clazz.getAnnotation(Since.class).value()});
+        else
+            documentationElement.setSince(new String[]{getAddon(syntaxElementInfo).plugin.getDescription().getVersion()});
         if (clazz.isAnnotationPresent(RequiredPlugins.class))
             documentationElement.setRequiredPlugins(clazz.getAnnotation(RequiredPlugins.class).value());
 
-        documentationElement.setPatterns(syntaxElementInfo.getPatterns());
 
         return documentationElement;
     }
 
     public static DocumentationElement generateEventDoc(SkriptEventInfo<?> skriptEventInfo) {
-        DocumentationElement documentationElement = new DocumentationElement();
+        DocumentationElement documentationElement = new DocumentationElement()
+                .setId(skriptEventInfo.getDocumentationID())
+                .setName(skriptEventInfo.getName())
+                .setDescription(skriptEventInfo.getDescription())
+                .setPatterns(skriptEventInfo.getPatterns())
+                .setExamples(skriptEventInfo.getExamples())
+                .setSince(new String[]{skriptEventInfo.getSince() == null ? getAddon(skriptEventInfo).plugin.getDescription().getVersion() : skriptEventInfo.getSince()})
+                .setRequiredPlugins(skriptEventInfo.getRequiredPlugins());
 
-        documentationElement.setId(skriptEventInfo.getDocumentationID());
-        documentationElement.setName(skriptEventInfo.getName());
-        documentationElement.setDescription(skriptEventInfo.getDescription());
-        documentationElement.setSince(new String[]{skriptEventInfo.getSince()});
-        documentationElement.setRequiredPlugins(skriptEventInfo.getRequiredPlugins());
+        return documentationElement;
+    }
+
+    public static DocumentationElement generateClassInfoDoc(ClassInfo<?> classInfo) {
+        DocumentationElement documentationElement = new DocumentationElement()
+                .setId(classInfo.getDocumentationId())
+                .setName(classInfo.getDocName())
+                .setDescription(classInfo.getDescription())
+                .setPatterns(new String[]{classInfo.getCodeName()})
+                .setExamples(classInfo.getExamples())
+                .setSince(new String[]{classInfo.getSince() == null ? getAddon(classInfo).plugin.getDescription().getVersion() : classInfo.getSince()});
 
         return documentationElement;
     }
@@ -108,15 +128,27 @@ public class DocBuilder {
 
         List<DocumentationElement> events = new ArrayList<>();
         for (SkriptEventInfo<?> event : Skript.getEvents()) {
-            Class<?> clazz = event.getElementClass();
-            if (clazz.getName().startsWith(thePackage)) {
+            SkriptAddon eventAddon = getAddon(event);
+            if (eventAddon == null)
+                continue;
+            if (eventAddon.equals(skriptAddon)) {
                 DocumentationElement documentationElement = generateEventDoc(event);
-                System.out.println(documentationElement);
                 events.add(documentationElement);
             }
         }
 
-        JsonDocOutput jsonDocOutput = new JsonDocOutput(effects, expressions, conditions, events);
+        List<DocumentationElement> types = new ArrayList<>();
+        for (ClassInfo<?> type : Classes.getClassInfos()) {
+            SkriptAddon typeAddon = getAddon(type);
+            if (typeAddon == null)
+                continue;
+            if (typeAddon.equals(skriptAddon)) {
+                DocumentationElement documentationElement = generateClassInfoDoc(type);
+                types.add(documentationElement);
+            }
+        }
+
+        JsonDocOutput jsonDocOutput = new JsonDocOutput(effects, expressions, conditions, events, types);
         String json = skriptDocsGenerator.getGson().toJson(jsonDocOutput);
         File file = new File(skriptDocsGenerator.getDataFolder() + File.separator + skriptAddon.getName() + ".json");
         try {
@@ -127,6 +159,38 @@ public class DocBuilder {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Nullable
+    public static SkriptAddon getAddon(SyntaxElementInfo<?> elementInfo) {
+        return getAddon(elementInfo.originClassPath);
+    }
+
+    @Nullable
+    public static SkriptAddon getAddon(ClassInfo<?> classInfo) {
+        if (classInfo.getParser() != null)
+            return getAddon(classInfo.getParser().getClass());
+        if (classInfo.getSerializer() != null)
+            return getAddon(classInfo.getSerializer().getClass());
+        if (classInfo.getChanger() != null)
+            return getAddon(classInfo.getChanger().getClass());
+        return null;
+    }
+
+    @Nullable
+    public static SkriptAddon getAddon(Class<?> clazz) {
+        return getAddon(clazz.getName());
+    }
+
+    @Nullable
+    public static SkriptAddon getAddon(String clazzName) {
+        if (clazzName.startsWith("ch.njol.skript"))
+            return null;
+        for (SkriptAddon addon : Skript.getAddons()) {
+            if (clazzName.startsWith(addon.plugin.getClass().getPackage().getName()))
+                return addon;
+        }
+        return null;
     }
 
 }

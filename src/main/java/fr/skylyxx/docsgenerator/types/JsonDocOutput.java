@@ -8,21 +8,13 @@ public class JsonDocOutput {
     private final List<DocumentationElement> expressions;
     private final List<DocumentationElement> conditions;
     private final List<DocumentationElement> events;
+    private final List<DocumentationElement> types;
 
-    public JsonDocOutput(List<DocumentationElement> effects, List<DocumentationElement> expressions, List<DocumentationElement> conditions, List<DocumentationElement> events) {
+    public JsonDocOutput(List<DocumentationElement> effects, List<DocumentationElement> expressions, List<DocumentationElement> conditions, List<DocumentationElement> events, List<DocumentationElement> types) {
         this.effects = effects;
         this.expressions = expressions;
         this.conditions = conditions;
         this.events = events;
-    }
-
-    @Override
-    public String toString() {
-        return "JsonDocOutput{" +
-                "effects=" + effects +
-                ", expressions=" + expressions +
-                ", conditions=" + conditions +
-                ", events=" + events +
-                '}';
+        this.types = types;
     }
 }
