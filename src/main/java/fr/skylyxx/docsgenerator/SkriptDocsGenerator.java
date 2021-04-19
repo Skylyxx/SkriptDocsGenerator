@@ -59,7 +59,7 @@ public class SkriptDocsGenerator extends JavaPlugin {
             SkriptDocsGeneratorCommand skriptDocsGeneratorCommand = new SkriptDocsGeneratorCommand();
             command.setExecutor(skriptDocsGeneratorCommand);
             // command.setTabCompleter(skriptDocsGeneratorCommand);
-            command.setPermissionMessage(getColored("&aSkriptDocsGenerator &6» &cYou don't have the requried permission !"));
+            command.setPermissionMessage(getColored("&aSkriptDocsGenerator &6» &cYou don't have the required permission !"));
 
             Logger.info("SkriptDocsGenerator successfully enabled !");
         }).start();
