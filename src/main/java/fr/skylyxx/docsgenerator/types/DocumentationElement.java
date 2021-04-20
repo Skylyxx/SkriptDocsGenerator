@@ -72,7 +72,7 @@ public class DocumentationElement {
     }
 
     public DocumentationElement setPatterns(String[] patterns) {
-        this.patterns = patterns;
+        this.patterns = removeParsemarks(patterns);
         return this;
     }
 
@@ -83,6 +83,13 @@ public class DocumentationElement {
     public DocumentationElement setRequiredPlugins(String[] requiredPlugins) {
         this.requiredPlugins = requiredPlugins;
         return this;
+    }
+
+    private String[] removeParsemarks(String[] patterns) {
+        for (int i = 0; i < patterns.length; i++) {
+            patterns[i] = patterns[i].replaceAll("\\d\\¦", "");
+        }
+        return patterns;
     }
 
     @Override
