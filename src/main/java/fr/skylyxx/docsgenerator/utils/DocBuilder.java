@@ -56,8 +56,10 @@ public class DocBuilder {
     }
 
     public static DocumentationElement generateEventDoc(SkriptEventInfo<?> skriptEventInfo) {
+        String[] split = skriptEventInfo.originClassPath.split("\\.");
+        String className = split[split.length - 1];
         DocumentationElement documentationElement = new DocumentationElement()
-                .setId(skriptEventInfo.getDocumentationID())
+                .setId(skriptEventInfo.getDocumentationID() == null ? className : skriptEventInfo.getDocumentationID())
                 .setName(skriptEventInfo.getName())
                 .setDescription(skriptEventInfo.getDescription())
                 .setPatterns(skriptEventInfo.getPatterns())
@@ -70,7 +72,7 @@ public class DocBuilder {
 
     public static DocumentationElement generateClassInfoDoc(ClassInfo<?> classInfo) {
         DocumentationElement documentationElement = new DocumentationElement()
-                .setId(classInfo.getDocumentationId())
+                .setId(classInfo.getDocumentationId() == null ? classInfo.getCodeName() : classInfo.getDocumentationId())
                 .setName(classInfo.getDocName())
                 .setDescription(classInfo.getDescription())
                 .setPatterns(new String[]{classInfo.getCodeName()})
