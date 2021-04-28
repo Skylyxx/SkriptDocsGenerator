@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply min-h-screen;
+    @apply bg-gradient-to-b;
+    @apply from-gray-800;
+    @apply to-gray-500;
+    @apply bg-fixed;
+    @apply text-white;
+    @apply absolute;
+    @apply top-0;
+    @apply left-0;
+    @apply w-full;
+}
+
+#termynal, #output {
+    @apply w-1/2;
+    @apply mt-3;
+    @apply mx-auto;
+}
+
+.button {
+    @apply bg-green-500;
+    @apply hover:bg-green-700;
+    @apply rounded-md;
+    @apply py-2;
+    @apply px-5;
+    @apply duration-300;
+}
+
+.download-item {
+    @apply max-w-xl;
+    @apply mx-auto;
+    @apply my-5;
+    @apply text-center;
+    @apply bg-gray-800;
+    @apply p-5;
+    @apply rounded-md;
+}
+.download-item a h1 {
+    @apply text-2xl;
+    @apply text-green-500;
+    @apply hover:text-white;
+    @apply hover:underline;
+}
+.download-item p {
+    @apply text-base;
+    @apply text-center;
+    @apply my-5;
+}
+
+h1 { @apply text-3xl; }
+h2 { @apply text-2xl; }
+h3 { @apply text-xl; }
