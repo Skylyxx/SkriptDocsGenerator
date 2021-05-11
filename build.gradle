@@ -1,5 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
+import java.time.LocalTime
+
 plugins {
     id 'java'
 }
@@ -9,12 +11,11 @@ version '1.0'
 
 def mcVersion = '1.16'
 def mcSubVersion = '.5'
-//def output = 'D:\\Servers\\Minecraft\\SkriptDocsGenerator\\plugins'
+def devOutput = 'D:\\Servers\\Minecraft\\SkriptDocsGenerator\\plugins'
 
 repositories {
     mavenCentral()
-    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
-    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
+    mavenLocal()
     maven { url = 'https://jitpack.io' }
 }
 
@@ -29,8 +30,27 @@ dependencies {
     }
 }
 
-//setLibsDirName(output)
-//build.finalizedBy(clean)
+jar {
+    archiveName("SkriptDocsGenerator.jar")
+}
+
+task githubRessources(type: ProcessResources) {
+    from("src/main/resources", {
+        include("**")
+        version = project.version
+        filter ReplaceTokens, tokens: [
+                'version': version + "-Github-" + System.currentTimeMillis(),
+                'apiVersion': mcVersion,
+        ]
+    })
+    into("build/resources/main")
+}
+
+task githubRelease(type: Jar) {
+    from sourceSets.main.output
+    dependsOn(githubRessources)
+    archiveName("SkriptDocsGenerator-Github.jar")
+}
 
 processResources {
     filter ReplaceTokens, tokens: [
