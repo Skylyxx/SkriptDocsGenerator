@@ -18,12 +18,11 @@ import java.util.Collection;
 
 public class SkriptDocsGenerator extends JavaPlugin {
 
-    private Gson gson;
-
     private final Collection<SyntaxElementInfo<? extends Effect>> effects = new ArrayList<>();
     private final Collection<ExpressionInfo<?, ?>> expressions = new ArrayList<>();
     private final Collection<SyntaxElementInfo<? extends Condition>> conditions = new ArrayList<>();
     private final Collection<SkriptEventInfo<?>> events = new ArrayList<>();
+    private Gson gson;
 
     @Override
     public void onEnable() {

@@ -47,9 +47,9 @@ public class DocBuilder {
 
         if (clazz.isAnnotationPresent(Examples.class))
             documentationElement.setExamples(clazz.getAnnotation(Examples.class).value());
-        if (clazz.isAnnotationPresent(Since.class))
+        if (clazz.isAnnotationPresent(Since.class)) {
             documentationElement.setSince(new String[]{clazz.getAnnotation(Since.class).value()});
-        else {
+        } else {
             SkriptAddon addon = getAddon(syntaxElementInfo);
             if (addon == null) {
                 throw new Exception("No addon found for syntax " + syntaxElementInfo.c.getName());
