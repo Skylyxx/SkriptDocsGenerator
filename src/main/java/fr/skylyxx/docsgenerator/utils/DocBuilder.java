@@ -23,7 +23,7 @@ public class DocBuilder {
 
     private static final SkriptDocsGenerator skriptDocsGenerator = SkriptDocsGenerator.getPlugin(SkriptDocsGenerator.class);
 
-    public static DocumentationElement generateElementDoc(SyntaxElementInfo syntaxElementInfo) {
+    public static DocumentationElement generateElementDoc(SyntaxElementInfo syntaxElementInfo) throws Exception {
         Class<?> clazz = syntaxElementInfo.getElementClass();
         DocumentationElement documentationElement = new DocumentationElement();
 
@@ -46,16 +46,24 @@ public class DocBuilder {
             documentationElement.setExamples(clazz.getAnnotation(Examples.class).value());
         if (clazz.isAnnotationPresent(Since.class))
             documentationElement.setSince(new String[]{clazz.getAnnotation(Since.class).value()});
-        else
-            documentationElement.setSince(new String[]{getAddon(syntaxElementInfo).plugin.getDescription().getVersion()});
-        if (clazz.isAnnotationPresent(RequiredPlugins.class))
+        else {
+            SkriptAddon addon = getAddon(syntaxElementInfo);
+            if (addon == null) {
+                throw new Exception("No addon found for syntax " + syntaxElementInfo.c.getName());
+            } else {
+                documentationElement.setSince(new String[]{addon.plugin.getDescription().getVersion()});
+            }
+        } if (clazz.isAnnotationPresent(RequiredPlugins.class)) {
             documentationElement.setRequiredPlugins(clazz.getAnnotation(RequiredPlugins.class).value());
-
+        }
 
         return documentationElement;
     }
 
-    public static DocumentationElement generateEventDoc(SkriptEventInfo<?> skriptEventInfo) {
+    public static DocumentationElement generateEventDoc(SkriptEventInfo<?> skriptEventInfo) throws Exception {
+        SkriptAddon addon = getAddon(skriptEventInfo);
+        if (addon == null)
+            throw new Exception("No addon found for event " + skriptEventInfo.c.getName());
         String[] split = skriptEventInfo.originClassPath.split("\\.");
         String className = split[split.length - 1];
         DocumentationElement documentationElement = new DocumentationElement()
@@ -64,28 +72,32 @@ public class DocBuilder {
                 .setDescription(skriptEventInfo.getDescription())
                 .setPatterns(skriptEventInfo.getPatterns())
                 .setExamples(skriptEventInfo.getExamples())
-                .setSince(new String[]{skriptEventInfo.getSince() == null ? getAddon(skriptEventInfo).plugin.getDescription().getVersion() : skriptEventInfo.getSince()})
+                .setSince(new String[]{skriptEventInfo.getSince() == null ? addon.plugin.getDescription().getVersion() : skriptEventInfo.getSince()})
                 .setRequiredPlugins(skriptEventInfo.getRequiredPlugins());
 
         return documentationElement;
     }
 
-    public static DocumentationElement generateClassInfoDoc(ClassInfo<?> classInfo) {
+    public static DocumentationElement generateClassInfoDoc(ClassInfo<?> classInfo) throws Exception {
+        SkriptAddon addon = getAddon(classInfo);
+        if (addon == null)
+            throw new Exception("No addon found for classinfo" + classInfo.getCodeName());
         DocumentationElement documentationElement = new DocumentationElement()
                 .setId(classInfo.getDocumentationId() == null ? classInfo.getCodeName() : classInfo.getDocumentationId())
                 .setName(classInfo.getDocName())
                 .setDescription(classInfo.getDescription())
                 .setPatterns(new String[]{classInfo.getCodeName()})
                 .setExamples(classInfo.getExamples())
-                .setSince(new String[]{classInfo.getSince() == null ? getAddon(classInfo).plugin.getDescription().getVersion() : classInfo.getSince()});
+                .setSince(new String[]{classInfo.getSince() == null ? addon.plugin.getDescription().getVersion() : classInfo.getSince()});
 
         return documentationElement;
     }
 
-    public static void generateAddonDoc(Pair<String, SkriptAddon> pair) {
+    public static void generateAddonDoc(Pair<String, SkriptAddon> pair) throws Exception {
         String mainClass = pair.getKey();
         SkriptAddon skriptAddon = pair.getValue();
-
+        assert mainClass != null;
+        assert skriptAddon != null;
         String[] split = mainClass.split("\\.");
         split[split.length - 1] = null;
         String thePackage = String.join(".", split).replace(".null", "");
@@ -130,10 +142,10 @@ public class DocBuilder {
 
         List<DocumentationElement> events = new ArrayList<>();
         for (SkriptEventInfo<?> event : Skript.getEvents()) {
-            SkriptAddon eventAddon = getAddon(event);
-            if (eventAddon == null)
+            SkriptAddon addon = getAddon(event);
+            if (addon == null)
                 continue;
-            if (eventAddon.equals(skriptAddon)) {
+            if (addon.equals(skriptAddon)) {
                 DocumentationElement documentationElement = generateEventDoc(event);
                 events.add(documentationElement);
             }
@@ -141,10 +153,10 @@ public class DocBuilder {
 
         List<DocumentationElement> types = new ArrayList<>();
         for (ClassInfo<?> type : Classes.getClassInfos()) {
-            SkriptAddon typeAddon = getAddon(type);
-            if (typeAddon == null)
+            SkriptAddon addon = getAddon(type);
+            if (addon == null)
                 continue;
-            if (typeAddon.equals(skriptAddon)) {
+            if (addon.equals(skriptAddon)) {
                 DocumentationElement documentationElement = generateClassInfoDoc(type);
                 types.add(documentationElement);
             }
@@ -165,6 +177,7 @@ public class DocBuilder {
 
     @Nullable
     public static SkriptAddon getAddon(SyntaxElementInfo<?> elementInfo) {
+        System.out.println(elementInfo.originClassPath);
         return getAddon(elementInfo.originClassPath);
     }
 

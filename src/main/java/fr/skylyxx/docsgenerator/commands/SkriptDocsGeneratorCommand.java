@@ -20,8 +20,12 @@ public class SkriptDocsGeneratorCommand implements CommandExecutor {
             return true;
         }
         for (SkriptAddon addon : Skript.getAddons()) {
-            DocBuilder.generateAddonDoc(new Pair<>(addon.plugin.getClass().getName(), addon));
-            sender.sendMessage(skriptDocsGenerator.getColored("&aSkriptDocsGenerator &6» &aDocumentation generated for " + addon.getName()));
+            try {
+                DocBuilder.generateAddonDoc(new Pair<>(addon.plugin.getClass().getName(), addon));
+                sender.sendMessage(skriptDocsGenerator.getColored("&aSkriptDocsGenerator &6» &aDocumentation generated for &2" + addon.getName()));
+            } catch (Exception e) {
+                sender.sendMessage(skriptDocsGenerator.getColored("&aSkriptDocsGenerator &6» &cAn error has occurred while generating documentation for &4" + addon.getName() + "&c: &4" + e.getMessage()));
+            }
         }
         return true;
     }
