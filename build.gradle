@@ -35,12 +35,22 @@ jar {
     archiveName("SkriptDocsGenerator.jar")
 }
 
+def getGitHash = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
 task githubRessources(type: ProcessResources) {
     from("src/main/resources", {
         include("**")
-        version = project.version
+        def lastCommit = getGitHash()
+        version = project.version + "-Github-" + lastCommit
         filter ReplaceTokens, tokens: [
-                'version': version + "-Github-" + System.currentTimeMillis(),
+                'version': version,
                 'apiVersion': mcVersion,
         ]
     })
