@@ -23,8 +23,11 @@ public class DocBuilder {
 
     private static final SkriptDocsGenerator skriptDocsGenerator = SkriptDocsGenerator.getPlugin(SkriptDocsGenerator.class);
 
+    @Nullable
     public static DocumentationElement generateElementDoc(SyntaxElementInfo syntaxElementInfo) throws Exception {
         Class<?> clazz = syntaxElementInfo.getElementClass();
+        if (clazz.isAnnotationPresent(NoDoc.class))
+            return null;
         DocumentationElement documentationElement = new DocumentationElement();
 
         if (clazz.isAnnotationPresent(DocumentationId.class))
@@ -104,11 +107,13 @@ public class DocBuilder {
 
         List<DocumentationElement> effects = new ArrayList<>();
         for (SyntaxElementInfo<? extends Effect> effect : Skript.getEffects()) {
-            Class<?> clazz = effect.getElementClass();
-            if (clazz.getName().startsWith(thePackage)) {
-                if (clazz.isAnnotationPresent(NoDoc.class))
-                    continue;
+            SkriptAddon addon = getAddon(effect);
+            if (addon == null)
+                continue;
+            if (addon.equals(skriptAddon)) {
                 DocumentationElement documentationElement = generateElementDoc(effect);
+                if (documentationElement == null)
+                    continue;
                 effects.add(documentationElement);
             }
         }
@@ -120,22 +125,26 @@ public class DocBuilder {
 
         List<DocumentationElement> expressions = new ArrayList<>();
         for (ExpressionInfo<?, ?> expression : skriptExpressions) {
-            Class<?> clazz = expression.getElementClass();
-            if (clazz.getName().startsWith(thePackage)) {
-                if (clazz.isAnnotationPresent(NoDoc.class))
-                    continue;
+            SkriptAddon addon = getAddon(expression);
+            if (addon == null)
+                continue;
+            if (addon.equals(skriptAddon)) {
                 DocumentationElement documentationElement = generateElementDoc(expression);
+                if (documentationElement == null)
+                    continue;
                 expressions.add(documentationElement);
             }
         }
 
         List<DocumentationElement> conditions = new ArrayList<>();
         for (SyntaxElementInfo<? extends Condition> condition : Skript.getConditions()) {
-            Class<?> clazz = condition.getElementClass();
-            if (clazz.getName().startsWith(thePackage)) {
-                if (clazz.isAnnotationPresent(NoDoc.class))
-                    continue;
+            SkriptAddon addon = getAddon(condition);
+            if (addon == null)
+                continue;
+            if (addon.equals(skriptAddon)) {
                 DocumentationElement documentationElement = generateElementDoc(condition);
+                if (documentationElement == null)
+                    continue;
                 conditions.add(documentationElement);
             }
         }
@@ -177,7 +186,6 @@ public class DocBuilder {
 
     @Nullable
     public static SkriptAddon getAddon(SyntaxElementInfo<?> elementInfo) {
-        System.out.println(elementInfo.originClassPath);
         return getAddon(elementInfo.originClassPath);
     }
 
