@@ -10,12 +10,13 @@ group 'fr.skylyxx.docsgenerator'
 version '1.0'
 
 def mcVersion = '1.16'
-def mcSubVersion = '.5'
+def mcSubVersion = '.4'
 def devOutput = 'D:\\Servers\\Minecraft\\SkriptDocsGenerator\\plugins'
 
 repositories {
     mavenCentral()
-    mavenLocal()
+    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots'}
     maven { url = 'https://jitpack.io' }
 }
 
