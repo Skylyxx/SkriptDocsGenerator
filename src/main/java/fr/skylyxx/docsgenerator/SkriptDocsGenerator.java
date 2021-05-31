@@ -57,7 +57,7 @@ public class SkriptDocsGenerator extends JavaPlugin {
             assert command != null;
             SkriptDocsGeneratorCommand skriptDocsGeneratorCommand = new SkriptDocsGeneratorCommand();
             command.setExecutor(skriptDocsGeneratorCommand);
-            // command.setTabCompleter(skriptDocsGeneratorCommand);
+            command.setTabCompleter(skriptDocsGeneratorCommand);
             command.setPermissionMessage(getColored("&aSkriptDocsGenerator &6» &cYou don't have the required permission !"));
 
             Logger.info("SkriptDocsGenerator successfully enabled !");
