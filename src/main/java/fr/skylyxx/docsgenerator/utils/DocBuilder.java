@@ -104,7 +104,6 @@ public class DocBuilder {
         assert skriptAddon != null;
         String[] split = mainClass.split("\\.");
         split[split.length - 1] = null;
-        String thePackage = String.join(".", split).replace(".null", "");
 
         List<DocumentationElement> effects = new ArrayList<>();
         for (SyntaxElementInfo<? extends Effect> effect : Skript.getEffects()) {
@@ -127,6 +126,7 @@ public class DocBuilder {
         List<DocumentationElement> expressions = new ArrayList<>();
         for (ExpressionInfo<?, ?> expression : skriptExpressions) {
             SkriptAddon addon = getAddon(expression);
+            System.out.println(expression.originClassPath + " <-> " + expression.getElementClass());
             if (addon == null)
                 continue;
             if (addon.equals(skriptAddon)) {
@@ -187,7 +187,7 @@ public class DocBuilder {
 
     @Nullable
     public static SkriptAddon getAddon(SyntaxElementInfo<?> elementInfo) {
-        return getAddon(elementInfo.originClassPath);
+        return getAddon(elementInfo.getElementClass());
     }
 
     @Nullable
