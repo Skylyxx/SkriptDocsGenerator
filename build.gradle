@@ -1,7 +1,5 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-import java.time.LocalTime
-
 plugins {
     id 'java'
 }

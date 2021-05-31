@@ -56,7 +56,8 @@ public class DocBuilder {
             } else {
                 documentationElement.setSince(new String[]{addon.plugin.getDescription().getVersion()});
             }
-        } if (clazz.isAnnotationPresent(RequiredPlugins.class)) {
+        }
+        if (clazz.isAnnotationPresent(RequiredPlugins.class)) {
             documentationElement.setRequiredPlugins(clazz.getAnnotation(RequiredPlugins.class).value());
         }
 
