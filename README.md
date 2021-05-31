@@ -9,4 +9,4 @@ It allows you to generate documentation automatically in JSON files, ready to se
 - Now, you can copy the content of your JSON file on [SkriptHub's](https://skripthub.net/dashboard/) or [SkUnity's](https://docs.skunity.com/admin/) dashboard.
 
 ## Support
-Support is available on [this discord server](https://discord.gg/ZKk5Gb3btf)
+Support is available on [this discord server](https://discord.gg/wUkgAjBWMc). You can also [make an issue](https://github.com/Skylyxx/SkriptDocsGenerator/issues/new).
