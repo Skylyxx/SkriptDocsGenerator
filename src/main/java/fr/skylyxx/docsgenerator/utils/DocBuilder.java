@@ -9,7 +9,10 @@ import ch.njol.skript.registrations.Classes;
 import ch.njol.util.Pair;
 import fr.skylyxx.docsgenerator.SkriptDocsGenerator;
 import fr.skylyxx.docsgenerator.types.DocumentationElement;
+import fr.skylyxx.docsgenerator.types.EventDocumentationElement;
 import fr.skylyxx.docsgenerator.types.JsonDocOutput;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -64,22 +67,32 @@ public class DocBuilder {
         return documentationElement;
     }
 
-    public static DocumentationElement generateEventDoc(SkriptEventInfo<?> skriptEventInfo) throws Exception {
+    public static EventDocumentationElement generateEventDoc(SkriptEventInfo<?> skriptEventInfo) throws Exception {
         SkriptAddon addon = getAddon(skriptEventInfo);
         if (addon == null)
             throw new Exception("No addon found for event " + skriptEventInfo.c.getName());
         String[] split = skriptEventInfo.originClassPath.split("\\.");
         String className = split[split.length - 1];
-        DocumentationElement documentationElement = new DocumentationElement()
+
+        boolean cancellable = true;
+        for (Class<? extends Event> clazz : skriptEventInfo.events) {
+            if(!Cancellable.class.isAssignableFrom(clazz)) {
+                cancellable = false;
+                break;
+            }
+        }
+
+        EventDocumentationElement eventDocumentationElement = new EventDocumentationElement()
                 .setId(skriptEventInfo.getDocumentationID() == null ? className : skriptEventInfo.getDocumentationID())
                 .setName(skriptEventInfo.getName())
                 .setDescription(skriptEventInfo.getDescription())
                 .setPatterns(skriptEventInfo.getPatterns())
                 .setExamples(skriptEventInfo.getExamples())
                 .setSince(new String[]{skriptEventInfo.getSince() == null ? addon.plugin.getDescription().getVersion() : skriptEventInfo.getSince()})
-                .setRequiredPlugins(skriptEventInfo.getRequiredPlugins());
+                .setRequiredPlugins(skriptEventInfo.getRequiredPlugins())
+                .setCancellable(cancellable);
 
-        return documentationElement;
+        return eventDocumentationElement;
     }
 
     public static DocumentationElement generateClassInfoDoc(ClassInfo<?> classInfo) throws Exception {
@@ -149,14 +162,14 @@ public class DocBuilder {
             }
         }
 
-        List<DocumentationElement> events = new ArrayList<>();
+        List<EventDocumentationElement> events = new ArrayList<>();
         for (SkriptEventInfo<?> event : Skript.getEvents()) {
             SkriptAddon addon = getAddon(event);
             if (addon == null)
                 continue;
             if (addon.equals(skriptAddon)) {
-                DocumentationElement documentationElement = generateEventDoc(event);
-                events.add(documentationElement);
+                EventDocumentationElement eventDocumentationElement = generateEventDoc(event);
+                events.add(eventDocumentationElement);
             }
         }
 
