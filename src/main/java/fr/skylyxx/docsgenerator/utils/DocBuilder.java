@@ -126,7 +126,6 @@ public class DocBuilder {
         List<DocumentationElement> expressions = new ArrayList<>();
         for (ExpressionInfo<?, ?> expression : skriptExpressions) {
             SkriptAddon addon = getAddon(expression);
-            System.out.println(expression.originClassPath + " <-> " + expression.getElementClass());
             if (addon == null)
                 continue;
             if (addon.equals(skriptAddon)) {
@@ -188,6 +187,11 @@ public class DocBuilder {
     @Nullable
     public static SkriptAddon getAddon(SyntaxElementInfo<?> elementInfo) {
         return getAddon(elementInfo.getElementClass());
+    }
+
+    @Nullable
+    public static SkriptAddon getAddon(SkriptEventInfo<?> eventInfo) {
+        return getAddon(eventInfo.originClassPath);
     }
 
     @Nullable
