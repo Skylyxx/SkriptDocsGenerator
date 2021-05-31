@@ -3,6 +3,7 @@ This plugin is an alternative of [SkriptHubDocsTool](https://github.com/SkriptHu
 It allows you to generate documentation automatically in JSON files, ready to send on popular Skript documentation websites !
 
 ## How to use ?
+*Wiki is now available [here](https://github.com/Skylyxx/SkriptDocsGenerator/wiki) !*
 - Put the [latest release](https://github.com/Skylyxx/SkriptDocsGenerator/releases/latest) in your **plugins/** folder.
 - Start your server 
 - Run the **/skriptdocsgenerator** command. JSON files are generated in **/plugins/SkriptDocsGenerator/**
