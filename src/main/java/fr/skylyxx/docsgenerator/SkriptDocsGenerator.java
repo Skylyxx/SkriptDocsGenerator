@@ -2,8 +2,10 @@ package fr.skylyxx.docsgenerator;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.lang.*;
+import ch.njol.skript.util.Version;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import fr.skylyxx.docsgenerator.commands.SkriptDocsGeneratorCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,7 +14,11 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -60,8 +66,28 @@ public class SkriptDocsGenerator extends JavaPlugin {
             command.setTabCompleter(skriptDocsGeneratorCommand);
             command.setPermissionMessage(getColored("&aSkriptDocsGenerator &6» &cYou don't have the required permission !"));
 
+            try {
+                this.checkForUpdates();
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+
             Logger.info("SkriptDocsGenerator successfully enabled !");
         }).start();
+    }
+
+    public boolean checkForUpdates() throws IOException {
+        URL url = new URL("https://api.github.com/repos/Skylyxx/SkriptDocsGenerator/releases/latest");
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()));
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(bufferedReader, JsonObject.class);
+        Version reference = new Version(jsonObject.get("tag_name").getAsString().replaceAll("^v", ""));
+        Version current = new Version(getDescription().getVersion());
+        if (current.compareTo(reference) < 0)
+            getLogger().warning("New version is available (" + jsonObject.get("tag_name").getAsString() + ")! Download it at https://github.com/Skylyxx/SkriptDocsGenerator/releases/latest !");
+        else
+            getLogger().info("You are running the latest version of SkriptDocsGenerator.");
+        return current.compareTo(reference) < 0;
     }
 
     public String getColored(String s) {
