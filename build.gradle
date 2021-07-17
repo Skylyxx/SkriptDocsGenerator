@@ -5,11 +5,10 @@ plugins {
 }
 
 group 'fr.skylyxx.docsgenerator'
-version '1.1'
+version '1.2'
 
-def mcVersion = '1.16'
-def mcSubVersion = '.4'
-def devOutput = 'D:\\Servers\\Minecraft\\SkriptDocsGenerator\\plugins'
+def mcVersion = '1.13'
+def mcSubVersion = '.2'
 
 repositories {
     mavenCentral()
@@ -21,7 +20,7 @@ repositories {
 dependencies {
     implementation(group: 'org.jetbrains', name: 'annotations', version: '16.0.2')
     implementation(group: 'org.spigotmc', name: 'spigot-api', version: mcVersion + mcSubVersion + '-R0.1-SNAPSHOT')
-    implementation('com.github.SkriptLang:Skript:2.5.3') {
+    implementation('com.github.SkriptLang:Skript:2.6-beta2') {
         exclude group: 'com.sk89q.worldguard', module: 'worldguard-legacy'
         exclude group: 'net.milkbowl.vault', module: 'Vault'
         exclude group: 'com.destroystokyo.paper', module: 'paper-api'

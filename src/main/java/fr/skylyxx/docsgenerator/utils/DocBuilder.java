@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class DocBuilder {
 
     @Nullable
     public static DocumentationElement generateElementDoc(SyntaxElementInfo syntaxElementInfo) throws Exception {
-        Class<?> clazz = syntaxElementInfo.getElementClass();
+        Class<?> clazz = syntaxElementInfo.c;
         if (clazz.isAnnotationPresent(NoDoc.class))
             return null;
         DocumentationElement documentationElement = new DocumentationElement();
@@ -46,7 +47,7 @@ public class DocBuilder {
         if (clazz.isAnnotationPresent(Description.class))
             documentationElement.setDescription(clazz.getAnnotation(Description.class).value());
 
-        documentationElement.setPatterns(syntaxElementInfo.getPatterns());
+        documentationElement.setPatterns(Arrays.copyOf(syntaxElementInfo.patterns, syntaxElementInfo.patterns.length));
 
         if (clazz.isAnnotationPresent(Examples.class))
             documentationElement.setExamples(clazz.getAnnotation(Examples.class).value());
@@ -86,7 +87,7 @@ public class DocBuilder {
                 .setId(skriptEventInfo.getDocumentationID() == null ? className : skriptEventInfo.getDocumentationID())
                 .setName(skriptEventInfo.getName())
                 .setDescription(skriptEventInfo.getDescription())
-                .setPatterns(skriptEventInfo.getPatterns())
+                .setPatterns(Arrays.copyOf(skriptEventInfo.patterns, skriptEventInfo.patterns.length))
                 .setExamples(skriptEventInfo.getExamples())
                 .setSince(new String[]{skriptEventInfo.getSince() == null ? addon.plugin.getDescription().getVersion() : skriptEventInfo.getSince()})
                 .setRequiredPlugins(skriptEventInfo.getRequiredPlugins())
@@ -201,7 +202,7 @@ public class DocBuilder {
 
     @Nullable
     public static SkriptAddon getAddon(SyntaxElementInfo<?> elementInfo) {
-        return getAddon(elementInfo.getElementClass());
+        return getAddon(elementInfo.c);
     }
 
     @Nullable
