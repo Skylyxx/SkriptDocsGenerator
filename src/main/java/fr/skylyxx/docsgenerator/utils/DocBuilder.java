@@ -110,7 +110,7 @@ public class DocBuilder {
         return documentationElement;
     }
 
-    public static void generateAddonDoc(Pair<String, SkriptAddon> pair) throws Exception {
+    public static int generateAddonDoc(Pair<String, SkriptAddon> pair) throws Exception {
         String mainClass = pair.getKey();
         SkriptAddon skriptAddon = pair.getValue();
         assert mainClass != null;
@@ -195,6 +195,8 @@ public class DocBuilder {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return effects.size() + expressions.size() + conditions.size() + events.size() + types.size();
     }
 
     @Nullable
