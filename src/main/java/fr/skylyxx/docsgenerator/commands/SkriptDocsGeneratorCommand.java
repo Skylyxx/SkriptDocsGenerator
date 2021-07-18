@@ -25,8 +25,10 @@ public class SkriptDocsGeneratorCommand implements CommandExecutor, TabCompleter
             sender.sendMessage(skriptDocsGenerator.getColored("&aSkriptDocsGenerator &6» &cSkript hasn't finished addon registration !"));
             return true;
         }
+        List<SkriptAddon> addons = new ArrayList<>(Skript.getAddons());
+        addons.add(Skript.getAddonInstance());
         if (args.length < 1) {
-            for (SkriptAddon addon : Skript.getAddons()) {
+            for (SkriptAddon addon : addons) {
                 try {
                     int syntaxes = DocBuilder.generateAddonDoc(new Pair<>(addon.plugin.getClass().getName(), addon));
                     sender.sendMessage(skriptDocsGenerator.getColored("&aSkriptDocsGenerator &6» &aDocumentation generated for &2" + addon.getName() + " &a(&e" + syntaxes + " syntaxes&a)"));
@@ -36,7 +38,7 @@ public class SkriptDocsGeneratorCommand implements CommandExecutor, TabCompleter
             }
         } else {
             SkriptAddon addon = null;
-            for (SkriptAddon skriptAddon : Skript.getAddons()) {
+            for (SkriptAddon skriptAddon : addons) {
                 if (skriptAddon.getName().equalsIgnoreCase(args[0]))
                     addon = skriptAddon;
             }

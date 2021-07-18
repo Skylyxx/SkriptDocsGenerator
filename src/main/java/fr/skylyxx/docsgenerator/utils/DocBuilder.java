@@ -92,7 +92,6 @@ public class DocBuilder {
                 .setSince(new String[]{skriptEventInfo.getSince() == null ? addon.plugin.getDescription().getVersion() : skriptEventInfo.getSince()})
                 .setRequiredPlugins(skriptEventInfo.getRequiredPlugins())
                 .setCancellable(cancellable);
-
         return eventDocumentationElement;
     }
 
@@ -196,7 +195,11 @@ public class DocBuilder {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+//        System.out.println("effects.size() = " + effects.size());
+//        System.out.println("expressions.size() = " + expressions.size());
+//        System.out.println("conditions.size() = " + conditions.size());
+//        System.out.println("events.size() = " + events.size());
+//        System.out.println("types.size() = " + types.size());
         return effects.size() + expressions.size() + conditions.size() + events.size() + types.size();
     }
 
@@ -229,7 +232,7 @@ public class DocBuilder {
     @Nullable
     public static SkriptAddon getAddon(String clazzName) {
         if (clazzName.startsWith("ch.njol.skript"))
-            return null;
+            return Skript.getAddonInstance();
         for (SkriptAddon addon : Skript.getAddons()) {
             if (clazzName.startsWith(addon.plugin.getClass().getPackage().getName()))
                 return addon;
