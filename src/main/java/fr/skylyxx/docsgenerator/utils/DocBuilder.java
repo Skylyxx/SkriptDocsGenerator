@@ -18,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -100,7 +102,7 @@ public class DocBuilder {
         if (addon == null)
             throw new Exception("No addon found for classinfo" + classInfo.getCodeName());
         DocumentationElement documentationElement = new DocumentationElement()
-                .setId(classInfo.getDocumentationId() == null ? classInfo.getCodeName() : classInfo.getDocumentationId())
+                .setId(getID(classInfo))
                 .setName(classInfo.getDocName())
                 .setDescription(classInfo.getDescription())
                 .setPatterns(new String[]{classInfo.getCodeName()})
@@ -108,6 +110,24 @@ public class DocBuilder {
                 .setSince(new String[]{classInfo.getSince() == null ? addon.plugin.getDescription().getVersion() : classInfo.getSince()});
 
         return documentationElement;
+    }
+
+    private static String getID(ClassInfo<?> classInfo) {
+        String result = null;
+        try {
+            final Method method =  classInfo.getClass().getMethod("getDocumentationId");
+            method.setAccessible(true);
+            result = (String) method.invoke(classInfo);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e1) {
+            try {
+                final Method method = classInfo.getClass().getMethod("getDocumentationID");
+                method.setAccessible(true);
+                result = (String) method.invoke(classInfo);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e2) {
+                e2.printStackTrace();
+            }
+        }
+        return result != null ? result : classInfo.getCodeName();
     }
 
     public static int generateAddonDoc(Pair<String, SkriptAddon> pair) throws Exception {
