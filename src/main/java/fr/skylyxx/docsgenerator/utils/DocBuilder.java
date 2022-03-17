@@ -169,6 +169,20 @@ public class DocBuilder {
             }
         }
 
+        List<DocumentationElement> sections = new ArrayList<>();
+        if (skriptDocsGenerator.isUsingSkript26())
+            for (SyntaxElementInfo<? extends ch.njol.skript.lang.Section> section : Skript.getSections()) {
+                SkriptAddon addon = getAddon(section);
+                if (addon == null)
+                    continue;
+                if (addon.equals(skriptAddon)) {
+                    DocumentationElement documentationElement = generateElementDoc(section);
+                    if (documentationElement == null)
+                        continue;
+                    sections.add(documentationElement);
+                }
+            }
+
         List<DocumentationElement> conditions = new ArrayList<>();
         for (SyntaxElementInfo<? extends Condition> condition : Skript.getConditions()) {
             SkriptAddon addon = getAddon(condition);
@@ -204,7 +218,7 @@ public class DocBuilder {
             }
         }
 
-        JsonDocOutput jsonDocOutput = new JsonDocOutput(effects, expressions, conditions, events, types);
+        JsonDocOutput jsonDocOutput = new JsonDocOutput(effects, expressions, conditions, events, types, sections);
         String json = skriptDocsGenerator.getGson().toJson(jsonDocOutput);
         File file = new File(skriptDocsGenerator.getDataFolder() + File.separator + skriptAddon.getName() + ".json");
         try {
@@ -220,7 +234,8 @@ public class DocBuilder {
 //        System.out.println("conditions.size() = " + conditions.size());
 //        System.out.println("events.size() = " + events.size());
 //        System.out.println("types.size() = " + types.size());
-        return effects.size() + expressions.size() + conditions.size() + events.size() + types.size();
+        return effects.size() + expressions.size() + conditions.size() + events.size() + types.size()
+                + (skriptDocsGenerator.isUsingSkript26() ? sections.size() : 0);
     }
 
     @Nullable
