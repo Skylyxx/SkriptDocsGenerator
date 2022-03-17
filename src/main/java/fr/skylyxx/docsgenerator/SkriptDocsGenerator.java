@@ -28,6 +28,7 @@ public class SkriptDocsGenerator extends JavaPlugin {
     private final Collection<ExpressionInfo<?, ?>> expressions = new ArrayList<>();
     private final Collection<SyntaxElementInfo<? extends Condition>> conditions = new ArrayList<>();
     private final Collection<SkriptEventInfo<?>> events = new ArrayList<>();
+    private boolean usingSkript26;
     private Gson gson;
 
     @Override
@@ -48,6 +49,7 @@ public class SkriptDocsGenerator extends JavaPlugin {
                 Logger.severe("Missing Skript dependency ! Disabling...");
                 setEnabled(false);
             }
+            usingSkript26 = Skript.getVersion().isLargerThan(new Version("2.6"));
 
             while (Skript.isAcceptRegistrations()) {
                 Logger.warning("Waiting to Skript finish registration");
@@ -92,6 +94,10 @@ public class SkriptDocsGenerator extends JavaPlugin {
 
     public String getColored(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
+    }
+
+    public boolean isUsingSkript26() {
+        return usingSkript26;
     }
 
     public Gson getGson() {
